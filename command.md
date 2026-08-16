@@ -46,3 +46,14 @@ Maintained continuously as the build progresses.
 - `INSERT INTO scratch (id, name) VALUES (1, 'Alice');` : add a row (string literals use single quotes)
 - `SELECT * FROM scratch;` : read back all rows from a table
 - `DROP TABLE scratch;` : delete a table and its data
+
+## Module 2 — Backend: FastAPI skeleton
+
+- `uv --version` : print the installed uv version (Python env/dependency manager)
+- `uv init backend` : scaffold a new Python project in `backend/` (pyproject.toml, main.py, .python-version)
+- `uv add fastapi "uvicorn[standard]"` : add FastAPI + uvicorn as deps, creating the `.venv` and recording them in pyproject.toml
+- `git check-ignore -v .venv` : ask Git whether a path is ignored and by which rule (verify `.venv` won't be committed)
+- `uv run python -c "import main; print('ok')"` : run a command inside the venv (used to syntax-check main.py)
+- `uv run uvicorn main:app --reload` : start the ASGI server, loading `app` from main.py, auto-reloading on file changes
+- `curl http://127.0.0.1:8000/` : send an HTTP GET to the running API and print the JSON response
+- `curl -i http://127.0.0.1:8000/` : same, but include response status line and headers
