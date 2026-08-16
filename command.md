@@ -65,3 +65,12 @@ Maintained continuously as the build progresses.
 - `uv run python -c "from sqlalchemy.schema import CreateTable; from models import Link; print(CreateTable(Link.__table__))"` : render the CREATE TABLE SQL SQLAlchemy generates from the model
 - `uv run python -c "import database; print(database.DATABASE_URL)"` : verify the .env DATABASE_URL loads via python-dotenv
 - `uv run python -c "from database import engine; from sqlalchemy import text; print(engine.connect().execute(text('SELECT 1')).scalar())"` : ping Postgres through the SQLAlchemy engine
+
+## Module 4 — Backend: Alembic migrations
+
+- `uv add alembic` : add Alembic (SQLAlchemy's migration tool) as a dependency
+- `uv run alembic init alembic` : scaffold the migrations env (alembic.ini + alembic/ with env.py, versions/)
+- `uv run alembic current` : show which migration revision the database is currently stamped at
+- `uv run alembic revision --autogenerate -m "create links table"` : diff models vs DB and write a migration script
+- `uv run alembic upgrade head` : apply all unapplied migrations up to the latest revision
+- `uv run alembic downgrade -1` : roll back the most recent migration (reverse via its downgrade())
