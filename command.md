@@ -99,3 +99,15 @@ Maintained continuously as the build progresses.
 
 - `npm run build` : type-check (tsc) and bundle the production build into frontend/dist/
 - (edit `vite.config.ts` `server.proxy`) : forward `/api` from the Vite dev server (5173) to the backend (8000)
+
+## Module 8 — Docker: backend image
+
+- `docker --version && docker info` : check Docker CLI version and that the daemon is running
+- `docker buildx ls` : list build drivers/builders (diagnosing the stuck buildkit boot)
+- `docker build -t shortlink-backend:dev .` : build an image from ./Dockerfile, tag it name:tag
+- `DOCKER_BUILDKIT=0 docker build -t shortlink-backend:dev .` : build with the legacy builder (bypass buildx)
+- `docker pull python:3.12-slim` : pull a base image (used to test registry connectivity)
+- `docker images shortlink-backend` : show an image and its size
+- `docker run --rm shortlink-backend:dev ls -la /app` : run a throwaway container overriding the default command
+- Git Bash note: absolute container paths like `/app` get mangled to Windows paths. Prefix with `MSYS_NO_PATHCONV=1` (e.g. `MSYS_NO_PATHCONV=1 docker run ... ls /app`) or use a leading double-slash `//app` to stop the translation.
+- WSL/Docker note: disabled a standalone WSL docker daemon (`sudo systemctl disable --now docker docker.socket`) so only Docker Desktop's WSL integration is active; after changing it, `wsl --shutdown` + restart Docker Desktop to reset networking.
