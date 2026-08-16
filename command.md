@@ -84,3 +84,13 @@ Maintained continuously as the build progresses.
 - `curl -i http://127.0.0.1:8000/<code>` : follow a short code — expect 307 redirect + Location header, click counter increments
 - `uv add prometheus-fastapi-instrumentator` : add auto-instrumentation that exposes app metrics at /metrics
 - `curl http://127.0.0.1:8000/metrics` : fetch Prometheus-format metrics text
+
+## Module 6 — Frontend: Vite + React + TypeScript
+
+- `node --version && npm --version` : check Node.js runtime and npm package-manager versions
+- `winget install OpenJS.NodeJS.LTS` : install/upgrade Node.js to current LTS (needed >=22.12 for Vite 8/rolldown)
+- `npm create vite@latest frontend -- --template react-ts` : scaffold a React + TypeScript app in frontend/
+- `npm install` : install the frontend's dependencies into node_modules (from package.json)
+- `rm -rf node_modules package-lock.json && npm install` : clean reinstall (fixes skipped native bindings)
+- `npm run dev` : start the Vite dev server with hot-reload (http://localhost:5173)
+- `git check-ignore -v frontend/node_modules` : verify node_modules is git-ignored
