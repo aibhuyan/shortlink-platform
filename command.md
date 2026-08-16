@@ -63,3 +63,5 @@ Maintained continuously as the build progresses.
 - `uv add sqlalchemy psycopg` : add the SQLAlchemy ORM + the sync Postgres driver (psycopg) as deps
 - `uv run python -c "import models; print('ok')"` : import-check the models module inside the venv
 - `uv run python -c "from sqlalchemy.schema import CreateTable; from models import Link; print(CreateTable(Link.__table__))"` : render the CREATE TABLE SQL SQLAlchemy generates from the model
+- `uv run python -c "import database; print(database.DATABASE_URL)"` : verify the .env DATABASE_URL loads via python-dotenv
+- `uv run python -c "from database import engine; from sqlalchemy import text; print(engine.connect().execute(text('SELECT 1')).scalar())"` : ping Postgres through the SQLAlchemy engine
