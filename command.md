@@ -74,3 +74,9 @@ Maintained continuously as the build progresses.
 - `uv run alembic revision --autogenerate -m "create links table"` : diff models vs DB and write a migration script
 - `uv run alembic upgrade head` : apply all unapplied migrations up to the latest revision
 - `uv run alembic downgrade -1` : roll back the most recent migration (reverse via its downgrade())
+
+## Module 5 — Backend: full API
+
+- `uv add asyncpg` : add the async Postgres driver used by the live API (Alembic keeps sync psycopg)
+- `uv run python -c "from main import generate_code; print(generate_code())"` : sanity-check the short-code generator
+- `curl -X POST http://127.0.0.1:8000/api/links -H "Content-Type: application/json" -d '{"target_url": "https://example.com"}'` : create a link (POST JSON body)
