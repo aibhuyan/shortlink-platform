@@ -23,3 +23,26 @@ Maintained continuously as the build progresses.
 - `gh pr create --base main --head <branch> --title "..." --body "..."` : open a pull request from a branch into main
 - `gh pr merge <number> --merge --delete-branch` : merge a PR normally, then delete the branch locally and on GitHub
 - `git pull` : download and merge remote commits into the current branch (sync local main after a merge)
+
+## Module 1 — Postgres, locally
+
+- `psql --version` : print the installed Postgres client version (checks whether it's installed)
+- `winget search PostgreSQL` : list PostgreSQL-related packages available via winget
+- `winget install -e --id PostgreSQL.PostgreSQL.17` : install PostgreSQL 17 (server + psql + tools) via the official installer
+- `Get-Service -Name postgresql*` : check whether the Postgres Windows service (server) is running
+- `Get-ItemProperty "HKLM:\...\Uninstall\*" | Where DisplayName -like "*PostgreSQL*"` : identify the installer/publisher used
+- `Get-Content "C:\Program Files\PostgreSQL\17\data\pg_hba.conf"` : view the host-based authentication rules (how connections are authed)
+- `chcp 65001` : set the terminal code page to UTF-8 to fix garbled psql output on Windows
+- `psql -U postgres` : connect to the Postgres server as the `postgres` superuser (prompts for password)
+- `psql -U postgres -c "SELECT version();"` : run a single SQL statement non-interactively and exit
+- `\l` : (psql meta-command) list all databases on the server
+- `\c <db>` : (psql) switch the connection to another database
+- `\dt` : (psql) list tables in the current database
+- `\d <table>` : (psql) describe a table's columns and types
+- `\x on` / `\x off` : (psql) toggle expanded display — vertical records, readable on narrow terminals
+- `\q` : (psql) quit psql
+- `CREATE DATABASE shortlink;` : create the project's dedicated database
+- `CREATE TABLE scratch (id integer, name text);` : create a throwaway table to demo columns/types
+- `INSERT INTO scratch (id, name) VALUES (1, 'Alice');` : add a row (string literals use single quotes)
+- `SELECT * FROM scratch;` : read back all rows from a table
+- `DROP TABLE scratch;` : delete a table and its data
