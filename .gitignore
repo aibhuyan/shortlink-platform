@@ -1,0 +1,46 @@
+# Secrets and local environment — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python (backend: FastAPI, SQLAlchemy, Alembic)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node / frontend (Vite + React)
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Docker
+# (no build artifacts to ignore, but keep local overrides out)
+docker-compose.override.yml
+
+# Kubernetes / Helm
+kubeconfig
+*.kubeconfig
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
