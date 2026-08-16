@@ -18,3 +18,8 @@ Maintained continuously as the build progresses.
 - `gh auth login` : log in to GitHub interactively (opens a browser)
 - `gh repo create <name> --public --source=. --remote=origin --push` : create a GitHub repo, link it as `origin`, and push
 - `git remote -v` : list configured remotes and their URLs
+- `git checkout -b <branch>` : create a new branch and switch to it
+- `git push -u origin <branch>` : push a new branch and link it to its remote counterpart (only needed the first push)
+- `gh pr create --base main --head <branch> --title "..." --body "..."` : open a pull request from a branch into main
+- `gh pr merge <number> --merge --delete-branch` : merge a PR normally, then delete the branch locally and on GitHub
+- `git pull` : download and merge remote commits into the current branch (sync local main after a merge)
