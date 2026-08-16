@@ -1,13 +1,15 @@
 import secrets
 import string
-from fastapi import FastAPI, Depends
+
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
+from prometheus_fastapi_instrumentator import Instrumentator
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from database import get_db
 from models import Link
 from schemas import LinkCreate, LinkRead
-from sqlalchemy import select
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.responses import RedirectResponse
 
 CODE_ALPHABET = string.ascii_letters + string.digits
 
@@ -17,6 +19,8 @@ def generate_code(length: int = 6) -> str:
 
 
 app = FastAPI()
+
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 def read_root():
