@@ -94,3 +94,8 @@ Maintained continuously as the build progresses.
 - `rm -rf node_modules package-lock.json && npm install` : clean reinstall (fixes skipped native bindings)
 - `npm run dev` : start the Vite dev server with hot-reload (http://localhost:5173)
 - `git check-ignore -v frontend/node_modules` : verify node_modules is git-ignored
+
+## Module 7 — Frontend: wired to the API
+
+- `npm run build` : type-check (tsc) and bundle the production build into frontend/dist/
+- (edit `vite.config.ts` `server.proxy`) : forward `/api` from the Vite dev server (5173) to the backend (8000)

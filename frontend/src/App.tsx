@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import './App.css'
 
 type Link = {
@@ -8,19 +8,36 @@ type Link = {
   clicks: number
 }
 
-const SAMPLE_LINKS: Link[] = [
-  { id: 1, code: 'abc123', target_url: 'https://example.com', clicks: 5 },
-  { id: 2, code: 'xy9zQ', target_url: 'https://python.org', clicks: 12 },
-]
-
 function App() {
   const [url, setUrl] = useState('')
+  const [links, setLinks] = useState<Link[]>([])
+
+  async function loadLinks() {
+    const res = await fetch('/api/links')
+    const data = await res.json()
+    setLinks(data)
+  }
+
+  useEffect(() => {
+    loadLinks()
+  }, [])
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    await fetch('/api/links', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target_url: url }),
+    })
+    setUrl('')
+    loadLinks()
+  }
 
   return (
     <main>
       <h1>Shortlink</h1>
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           type="url"
           placeholder="Paste a long URL"
@@ -39,7 +56,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {SAMPLE_LINKS.map((link) => (
+          {links.map((link) => (
             <tr key={link.id}>
               <td>{link.code}</td>
               <td>{link.target_url}</td>
