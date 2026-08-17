@@ -190,3 +190,5 @@ Maintained continuously as the build progresses.
 - CI flow: smoke-test backend imports -> build both images -> install+run Trivy scan (HIGH,CRITICAL, report-only) -> push to GHCR tagged with the commit SHA
 - Images: ghcr.io/aibhuyan/shortlink-backend:<sha> and ghcr.io/aibhuyan/shortlink-frontend:<sha> (GHCR login via the built-in GITHUB_TOKEN, permissions: packages: write)
 - Note: Trivy installed via its official script in a run step (the pinned trivy-action version failed to resolve).
+- CI trigger is `workflow_dispatch` (manual only) — run it from the Actions tab "Run workflow" button, or:
+- `gh workflow run ci.yml --ref <branch>` : trigger the CI workflow manually from the terminal
