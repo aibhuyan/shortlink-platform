@@ -238,3 +238,10 @@ Maintained continuously as the build progresses.
 - `k6 run k6/load-test.js` : run the load test (3 stages, up to 10 VUs, ~2 min) against the live app
 - `k6 run -e BASE_URL=http://<ip> k6/load-test.js` : override the target URL
 - Watch the Grafana "Shortlink API" dashboard (Last 15m, 5s auto-refresh) move as load ramps; capture the GIF for the README.
+
+## Module 20 — README + final polish
+
+- `docker compose up --build` : rebuild + view the polished app locally at http://localhost:8080
+- Final polish: dark modern App.css, clickable short codes (`/{code}`), clickable target URLs, backend URL `.strip()`.
+- README.md with a Mermaid architecture diagram, screenshots (docs/images/), and setup instructions.
+- `terraform destroy` (from terraform/) : ⚠️ FINAL teardown of the Azure infra.

@@ -24,47 +24,77 @@ function App() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    const target = url.trim()
+    if (!target) return
     await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ target_url: url }),
+      body: JSON.stringify({ target_url: target }),
     })
     setUrl('')
     loadLinks()
   }
 
   return (
-    <main>
-      <h1>Shortlink</h1>
+    <main className="container">
+      <header className="hero">
+        <h1>🔗 Shortlink</h1>
+        <p className="subtitle">Paste a long URL, get a short one.</p>
+      </header>
 
-      <form onSubmit={handleSubmit}>
+      <form className="shorten-form" onSubmit={handleSubmit}>
         <input
           type="url"
-          placeholder="Paste a long URL"
+          placeholder="https://example.com/very/long/url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
         <button type="submit">Shorten</button>
       </form>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Target URL</th>
-            <th>Clicks</th>
-          </tr>
-        </thead>
-        <tbody>
-          {links.map((link) => (
-            <tr key={link.id}>
-              <td>{link.code}</td>
-              <td>{link.target_url}</td>
-              <td>{link.clicks}</td>
+      <div className="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Short code</th>
+              <th>Target URL</th>
+              <th className="clicks-col">Clicks</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {links.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="empty">No links yet — shorten one above.</td>
+              </tr>
+            ) : (
+              links.map((link) => (
+                <tr key={link.id}>
+                  <td>
+                    <a
+                      className="code"
+                      href={`/${link.code}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      /{link.code}
+                    </a>
+                  </td>
+                  <td className="target">
+                    <a href={link.target_url} target="_blank" rel="noreferrer">
+                      {link.target_url}
+                    </a>
+                  </td>
+                  <td className="clicks-col">{link.clicks}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <footer className="footer">
+        A DevOps portfolio project — the infrastructure is the point.
+      </footer>
     </main>
   )
 }
