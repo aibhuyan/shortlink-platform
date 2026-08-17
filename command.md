@@ -142,3 +142,19 @@ Maintained continuously as the build progresses.
 - `kubectl port-forward service/<name> 8081:80` : tunnel localhost:8081 to a ClusterIP service for testing
 - `kubectl delete -f <file>.yaml` : delete the objects defined in a manifest
 - `kind delete cluster --name shortlink` : delete the whole local cluster (when finished with the project)
+
+## Module 12 — Kubernetes: full app
+
+- `kubectl apply -f k8s/namespace.yaml` : create the `shortlink` namespace
+- `kubectl apply -f k8s/configmap.yaml` : create the non-secret config (POSTGRES_USER/DB)
+- `kubectl create secret generic shortlink-secret -n shortlink --from-literal=POSTGRES_PASSWORD=... --from-literal=DATABASE_URL=...` : create the Secret imperatively (never committed)
+- `kubectl apply -f k8s/postgres.yaml` : StatefulSet + headless Service + PVC for Postgres
+- `kind load docker-image <name>:latest --name shortlink` : load a locally-built image into the kind cluster
+- `kubectl apply -f k8s/migrate-job.yaml` : run `alembic upgrade head` as a one-shot Job
+- `kubectl apply -f k8s/backend.yaml` : backend Deployment (2 replicas, /health probes) + Service
+- `kubectl apply -f k8s/frontend.yaml` : frontend Deployment (2 replicas) + Service
+- `kubectl get pods -n shortlink -w` : watch pods in the namespace (Ctrl+C to stop)
+- `kubectl logs -n shortlink job/migrate` : view the migration Job logs
+- `kubectl describe pod <pod> -n shortlink` : inspect a pod's events (debugging)
+- `kubectl port-forward -n shortlink service/frontend 8090:80` : reach the app in the cluster at localhost:8090
+- Note: images use `imagePullPolicy: IfNotPresent` so kind-loaded local images aren't pulled from a registry.
