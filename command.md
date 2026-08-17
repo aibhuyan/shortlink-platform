@@ -128,3 +128,17 @@ Maintained continuously as the build progresses.
 - `docker compose ps` : list the stack's running services
 - `docker compose logs -f <service>` : follow logs for one service
 - App served at http://localhost:8080 through nginx; short codes redirect at the same origin (e.g. /{code}).
+
+## Module 11 — Kubernetes: concepts and kind
+
+- `kind --version` / `kubectl version --client` : check the kind and kubectl tool versions
+- `kind create cluster --name shortlink` : create a local single-node Kubernetes cluster (a Docker container node)
+- `kubectl config current-context` : show which cluster kubectl is pointed at (kind-shortlink)
+- `kubectl get nodes` : list cluster nodes and their status
+- `kubectl cluster-info` : show the control-plane / CoreDNS endpoints
+- `kubectl apply -f <file>.yaml` : declaratively create/update objects from a manifest
+- `kubectl get pods` / `kubectl get service <name>` : list pods / inspect a service
+- `kubectl delete pod <name>` : delete a pod (Deployment recreates it — self-healing demo)
+- `kubectl port-forward service/<name> 8081:80` : tunnel localhost:8081 to a ClusterIP service for testing
+- `kubectl delete -f <file>.yaml` : delete the objects defined in a manifest
+- `kind delete cluster --name shortlink` : delete the whole local cluster (when finished with the project)
