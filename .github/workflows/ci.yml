@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen
+
+      - name: Smoke-test backend imports
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+psycopg://user:pass@localhost:5432/db
+        run: uv run python -c "import main; print('backend imports OK')"
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            context: ./backend
+          - name: frontend
+            context: ./frontend
+    env:
+      IMAGE: ghcr.io/${{ github.repository_owner }}/shortlink-${{ matrix.name }}
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          load: true
+          tags: ${{ env.IMAGE }}:${{ github.sha }}
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "0"
+
+      - name: Push image to GHCR
+        if: github.event_name == 'push'
+        run: docker push ${{ env.IMAGE }}:${{ github.sha }}
