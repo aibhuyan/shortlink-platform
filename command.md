@@ -180,3 +180,13 @@ Maintained continuously as the build progresses.
 - `helm upgrade shortlink chart --namespace shortlink --set ...` : apply changes to an existing release
 - `helm uninstall <release> --namespace <ns>` : remove a release and all its resources
 - Note: k8s/ keeps the raw manifests as a reference; the Helm chart in chart/ is the actual deployment method.
+
+## Module 15 — GitHub Actions (CI)
+
+- `.github/workflows/ci.yml` : workflow triggered on push/PR — test job + matrix build (backend, frontend)
+- `gh run watch` : stream a running GitHub Actions run's status in the terminal
+- `gh run list` : list recent workflow runs
+- `gh run view <id> --log` : view a run's full logs
+- CI flow: smoke-test backend imports -> build both images -> install+run Trivy scan (HIGH,CRITICAL, report-only) -> push to GHCR tagged with the commit SHA
+- Images: ghcr.io/aibhuyan/shortlink-backend:<sha> and ghcr.io/aibhuyan/shortlink-frontend:<sha> (GHCR login via the built-in GITHUB_TOKEN, permissions: packages: write)
+- Note: Trivy installed via its official script in a run step (the pinned trivy-action version failed to resolve).
