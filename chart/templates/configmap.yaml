@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shortlink-config
+data:
+  POSTGRES_USER: {{ .Values.postgres.user | quote }}
+  POSTGRES_DB: {{ .Values.postgres.db | quote }}
