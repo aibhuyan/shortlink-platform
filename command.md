@@ -192,3 +192,15 @@ Maintained continuously as the build progresses.
 - Note: Trivy installed via its official script in a run step (the pinned trivy-action version failed to resolve).
 - CI trigger is `workflow_dispatch` (manual only) — run it from the Actions tab "Run workflow" button, or:
 - `gh workflow run ci.yml --ref <branch>` : trigger the CI workflow manually from the terminal
+
+## Module 16 — Terraform
+
+- `terraform version` / `az version` / `az account show` : check tooling + Azure login
+- `az account list-locations --query "[?metadata.regionType=='Physical'].{Name:name,Display:displayName}" -o table` : list deployable regions (name is what Terraform needs)
+- `terraform init` : download providers, set up the working dir (creates .terraform/ and .terraform.lock.hcl)
+- `terraform plan` : preview changes without creating anything (reads only)
+- `terraform apply` : create/update real resources (prompts yes) — idempotent, safe to re-run
+- `terraform state list` : list the resources Terraform is tracking in state
+- `az aks get-credentials --resource-group shortlink-rg --name shortlink-aks --overwrite-existing` : point kubectl at the AKS cluster
+- `terraform destroy` : delete all managed resources (⚠️ run at project end — infra is on free credit)
+- Notes: use `Standard_B2s_v2` (v1 B2s blocked in swedencentral); Postgres zone is auto-assigned → `lifecycle { ignore_changes = [zone] }`. Secrets: db_password in git-ignored terraform.tfvars; state (*.tfstate) is git-ignored (it contains secrets).
