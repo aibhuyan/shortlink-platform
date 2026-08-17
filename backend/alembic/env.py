@@ -13,7 +13,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+# Escape % for ConfigParser interpolation (e.g. a percent-encoded password like %23)
+config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"].replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
