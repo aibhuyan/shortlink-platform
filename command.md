@@ -118,3 +118,13 @@ Maintained continuously as the build progresses.
 - `docker run --rm shortlink-frontend:dev ls -la /usr/share/nginx/html` : list the static files baked into the nginx image
 - `docker run --rm shortlink-frontend:dev cat /etc/nginx/conf.d/default.conf` : print the nginx config inside the image
 - Note: running the frontend image standalone fails because nginx can't resolve the `backend` hostname (that hostname is provided by Docker Compose in Module 10).
+
+## Module 10 — Docker Compose
+
+- `uv add "psycopg[binary]"` : switch to psycopg with a bundled libpq so it works in the slim container (no system libpq)
+- `docker compose up --build` : build images and start all services (postgres, migrate, backend, frontend) on one network
+- `docker compose down` : stop and remove the stack's containers/network (named volumes are kept)
+- `docker compose down -v` : same, but also delete named volumes (wipes the database)
+- `docker compose ps` : list the stack's running services
+- `docker compose logs -f <service>` : follow logs for one service
+- App served at http://localhost:8080 through nginx; short codes redirect at the same origin (e.g. /{code}).
