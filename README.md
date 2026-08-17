@@ -177,7 +177,17 @@ Built module-by-module, each on its own branch merged via pull request, with tag
 
 The app is intentionally minimal — the infrastructure is the focus. Natural next steps would be:
 
+**App**
 - Pagination / search on the links table for large datasets
 - Custom short codes and link expiry
 - Rate limiting and abuse protection
 - Authentication (per-user links)
+
+**AI-assisted operations (planned direction)**
+
+A larger goal for this platform is an **AI agent for Kubernetes operations** — a self-hosted assistant that helps observe and run the cluster:
+
+- An **agent harness** driving a **locally-run LLM** (no external API — the model runs on-cluster / on-prem for privacy and cost control).
+- Natural-language **cluster operations** ("why is the backend pod restarting?", "scale the frontend to 4") over guarded access to the Kubernetes API.
+- **Automated diagnostics and remediation** — the agent inspects Prometheus metrics, logs, and events to surface root causes and propose (or, with approval, apply) fixes.
+- Hooking the agent into the existing **observability** stack so an Alertmanager alert can trigger an AI triage step.
