@@ -27,3 +27,11 @@ secret:
 ingress:
   enabled: true
   className: nginx
+
+serviceMonitor:
+  # requires the Prometheus Operator CRDs (kube-prometheus-stack). Off by default.
+  enabled: false
+
+prometheusRule:
+  # requires the Prometheus Operator CRDs (kube-prometheus-stack). Off by default.
+  enabled: false
