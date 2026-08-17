@@ -111,3 +111,10 @@ Maintained continuously as the build progresses.
 - `docker run --rm shortlink-backend:dev ls -la /app` : run a throwaway container overriding the default command
 - Git Bash note: absolute container paths like `/app` get mangled to Windows paths. Prefix with `MSYS_NO_PATHCONV=1` (e.g. `MSYS_NO_PATHCONV=1 docker run ... ls /app`) or use a leading double-slash `//app` to stop the translation.
 - WSL/Docker note: disabled a standalone WSL docker daemon (`sudo systemctl disable --now docker docker.socket`) so only Docker Desktop's WSL integration is active; after changing it, `wsl --shutdown` + restart Docker Desktop to reset networking.
+
+## Module 9 — Docker: frontend image (multi-stage + nginx)
+
+- `docker build -t shortlink-frontend:dev .` : build the multi-stage frontend image (node build stage -> nginx runtime)
+- `docker run --rm shortlink-frontend:dev ls -la /usr/share/nginx/html` : list the static files baked into the nginx image
+- `docker run --rm shortlink-frontend:dev cat /etc/nginx/conf.d/default.conf` : print the nginx config inside the image
+- Note: running the frontend image standalone fails because nginx can't resolve the `backend` hostname (that hostname is provided by Docker Compose in Module 10).
