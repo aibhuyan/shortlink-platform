@@ -230,3 +230,11 @@ Maintained continuously as the build progresses.
 - Chart adds a `ServiceMonitor` (scrape backend /metrics, label `release: monitoring`) and a `PrometheusRule` (BackendDown alert), gated by serviceMonitor.enabled / prometheusRule.enabled (true in values-aks.yaml).
 - Grafana dashboard JSON committed at monitoring/grafana-dashboard.json (import via Dashboards → New → Import).
 - `kubectl patch application shortlink -n argocd --type merge -p '{"spec":{"source":{"targetRevision":"<branch>"}}}'` : point ArgoCD at a branch to test chart changes before merge.
+
+## Module 19 — k6 load test and demo
+
+- `k6 version` : check k6 is installed (winget id `GrafanaLabs.k6`; installs to C:\Program Files\k6)
+- `export PATH="$PATH:/c/Program Files/k6"` : add k6 to the current Git Bash session PATH if not found
+- `k6 run k6/load-test.js` : run the load test (3 stages, up to 10 VUs, ~2 min) against the live app
+- `k6 run -e BASE_URL=http://<ip> k6/load-test.js` : override the target URL
+- Watch the Grafana "Shortlink API" dashboard (Last 15m, 5s auto-refresh) move as load ramps; capture the GIF for the README.
