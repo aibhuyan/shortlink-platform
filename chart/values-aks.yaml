@@ -23,3 +23,6 @@ secret:
 
 ingress:
   enabled: false
+
+serviceMonitor:
+  enabled: true
