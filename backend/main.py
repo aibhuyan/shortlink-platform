@@ -32,7 +32,7 @@ async def health():
 
 @app.post("/api/links", response_model=LinkRead, status_code=201)
 async def create_link(payload: LinkCreate, db: AsyncSession = Depends(get_db)):
-    link = Link(code=generate_code(), target_url=payload.target_url)
+    link = Link(code=generate_code(), target_url=payload.target_url.strip())
     db.add(link)
     await db.commit()
     await db.refresh(link)
