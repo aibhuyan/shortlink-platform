@@ -1,0 +1,21 @@
+{{- if .Values.prometheusRule.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: shortlink
+  labels:
+    # kube-prometheus-stack's Prometheus only picks up rules with this label
+    release: monitoring
+spec:
+  groups:
+    - name: shortlink.rules
+      rules:
+        - alert: BackendDown
+          expr: up{namespace="shortlink"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Backend target is down"
+            description: "A backend instance in the shortlink namespace has been unreachable for over 1 minute."
+{{- end }}
