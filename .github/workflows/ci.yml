@@ -57,13 +57,11 @@ jobs:
           load: true
           tags: ${{ env.IMAGE }}:${{ github.sha }}
 
+      - name: Install Trivy
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
       - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
-          format: table
-          severity: HIGH,CRITICAL
-          exit-code: "0"
+        run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ env.IMAGE }}:${{ github.sha }}
 
       - name: Push image to GHCR
         if: github.event_name == 'push'
