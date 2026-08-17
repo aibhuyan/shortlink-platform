@@ -219,3 +219,14 @@ Maintained continuously as the build progresses.
 - `kubectl apply -f argocd/application.yaml` : register the ArgoCD Application (chart/ + values-aks.yaml → shortlink ns on AKS)
 - `kubectl get service frontend -n shortlink` : get the frontend LoadBalancer public IP
 - Gotcha: URL-encoded `%` in DATABASE_URL breaks Alembic's ConfigParser → fixed in env.py with `.replace("%","%%")`; also use a DB password without special chars to avoid encoding. Deploy uses `:latest` (imagePullPolicy IfNotPresent won't re-pull a changed :latest — restart/new tag needed).
+
+## Module 18 — Observability (kube-prometheus-stack)
+
+- `az aks nodepool scale -g shortlink-rg --cluster-name shortlink-aks -n default --node-count 2` : scale AKS to fit the monitoring stack
+- `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts && helm repo update` : add/update the chart repo (LOCAL client config, not the cluster)
+- `helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace --set grafana.adminPassword=admin` : install Prometheus + Grafana + Alertmanager + Operator
+- `kubectl port-forward -n monitoring svc/monitoring-kube-prometheus-prometheus 9090:9090` : open the Prometheus UI (Targets, Alerts, PromQL)
+- `kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80` : open Grafana (admin/admin)
+- Chart adds a `ServiceMonitor` (scrape backend /metrics, label `release: monitoring`) and a `PrometheusRule` (BackendDown alert), gated by serviceMonitor.enabled / prometheusRule.enabled (true in values-aks.yaml).
+- Grafana dashboard JSON committed at monitoring/grafana-dashboard.json (import via Dashboards → New → Import).
+- `kubectl patch application shortlink -n argocd --type merge -p '{"spec":{"source":{"targetRevision":"<branch>"}}}'` : point ArgoCD at a branch to test chart changes before merge.
