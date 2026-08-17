@@ -1,0 +1,21 @@
+backend:
+  image: shortlink-platform-backend
+  tag: latest
+  replicas: 2
+
+frontend:
+  image: shortlink-platform-frontend
+  tag: latest
+  replicas: 2
+
+postgres:
+  image: postgres:17
+  user: postgres
+  db: shortlink
+  # Provide the real password at install time, e.g. --set postgres.password=secret
+  password: ""
+  storage: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx

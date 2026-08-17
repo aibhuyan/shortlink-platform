@@ -168,3 +168,15 @@ Maintained continuously as the build progresses.
 - `kubectl get ingress -n shortlink` : list Ingress resources
 - `kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80` : reach the app through the ingress at localhost:8080
 - Note: for direct localhost:80 access, recreate the kind cluster with a config using extraPortMappings (optional enhancement).
+
+## Module 14 — Helm
+
+- `helm version` : check the Helm version
+- `helm lint chart --set postgres.password=test` : validate the chart's structure
+- `helm template shortlink chart --set postgres.password=test` : render templates to YAML without installing (debug)
+- `helm install shortlink chart --namespace shortlink --create-namespace --set postgres.password=...` : install the chart as a release
+- `helm install shortlink-staging chart --namespace shortlink-staging --create-namespace --set backend.replicas=1 --set frontend.replicas=1 --set ingress.enabled=false --set postgres.password=...` : second environment from the same chart
+- `helm list --all-namespaces` : list all Helm releases
+- `helm upgrade shortlink chart --namespace shortlink --set ...` : apply changes to an existing release
+- `helm uninstall <release> --namespace <ns>` : remove a release and all its resources
+- Note: k8s/ keeps the raw manifests as a reference; the Helm chart in chart/ is the actual deployment method.
