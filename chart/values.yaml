@@ -7,14 +7,22 @@ frontend:
   image: shortlink-platform-frontend
   tag: latest
   replicas: 2
+  serviceType: ClusterIP
 
 postgres:
+  # enabled: deploy the in-cluster Postgres StatefulSet. Set false to use an external DB.
+  enabled: true
+  host: postgres
   image: postgres:17
   user: postgres
   db: shortlink
   # Provide the real password at install time, e.g. --set postgres.password=secret
   password: ""
   storage: 1Gi
+
+secret:
+  # create: template the Secret from values. Set false to use a pre-created Secret (e.g. on AKS).
+  create: true
 
 ingress:
   enabled: true

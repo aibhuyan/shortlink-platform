@@ -1,0 +1,25 @@
+# Overrides for deploying to AKS (real cloud):
+#  - images pulled from public GHCR
+#  - external Azure managed Postgres (in-cluster Postgres disabled)
+#  - Secret pre-created in the cluster (not templated), so no password in Git
+#  - frontend exposed via a LoadBalancer public IP (no ingress)
+backend:
+  image: ghcr.io/aibhuyan/shortlink-backend
+  tag: latest
+
+frontend:
+  image: ghcr.io/aibhuyan/shortlink-frontend
+  tag: latest
+  serviceType: LoadBalancer
+
+postgres:
+  enabled: false
+  host: shortlink-pg-aibhuyan.postgres.database.azure.com
+  user: pgadmin
+  db: shortlink
+
+secret:
+  create: false
+
+ingress:
+  enabled: false

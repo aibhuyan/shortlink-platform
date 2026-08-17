@@ -36,6 +36,7 @@ kind: Service
 metadata:
   name: frontend
 spec:
+  type: {{ .Values.frontend.serviceType }}
   selector:
     app: frontend
   ports:
