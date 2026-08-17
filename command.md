@@ -204,3 +204,18 @@ Maintained continuously as the build progresses.
 - `az aks get-credentials --resource-group shortlink-rg --name shortlink-aks --overwrite-existing` : point kubectl at the AKS cluster
 - `terraform destroy` : delete all managed resources (⚠️ run at project end — infra is on free credit)
 - Notes: use `Standard_B2s_v2` (v1 B2s blocked in swedencentral); Postgres zone is auto-assigned → `lifecycle { ignore_changes = [zone] }`. Secrets: db_password in git-ignored terraform.tfvars; state (*.tfstate) is git-ignored (it contains secrets).
+
+## Module 17 — ArgoCD (GitOps, deployed to real AKS)
+
+- `kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side --force-conflicts` : install ArgoCD (server-side avoids the annotation size limit)
+- `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d` : get the ArgoCD admin password (user: admin)
+- `kubectl port-forward -n argocd service/argocd-server 8081:443` : open the ArgoCD UI at https://localhost:8081
+- `gh auth refresh -h github.com -s write:packages` + `gh auth token | docker login ghcr.io -u aibhuyan --password-stdin` : auth Docker to GHCR
+- `docker tag <local> ghcr.io/aibhuyan/shortlink-<svc>:latest && docker push ...` : publish images to GHCR for AKS to pull
+- `az postgres flexible-server firewall-rule create -g shortlink-rg -s shortlink-pg-aibhuyan -n allow-all --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255` : open DB firewall (demo only)
+- `az postgres flexible-server db create -g shortlink-rg -s shortlink-pg-aibhuyan -n shortlink` : create the app database
+- `az postgres flexible-server parameter set -g shortlink-rg -s shortlink-pg-aibhuyan -n require_secure_transport -v off` : allow non-SSL (demo)
+- `kubectl create secret generic shortlink-secret -n shortlink --from-literal=DATABASE_URL=... --from-literal=POSTGRES_PASSWORD=...` : pre-create the app Secret (out of Git)
+- `kubectl apply -f argocd/application.yaml` : register the ArgoCD Application (chart/ + values-aks.yaml → shortlink ns on AKS)
+- `kubectl get service frontend -n shortlink` : get the frontend LoadBalancer public IP
+- Gotcha: URL-encoded `%` in DATABASE_URL breaks Alembic's ConfigParser → fixed in env.py with `.replace("%","%%")`; also use a DB password without special chars to avoid encoding. Deploy uses `:latest` (imagePullPolicy IfNotPresent won't re-pull a changed :latest — restart/new tag needed).
