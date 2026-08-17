@@ -158,3 +158,13 @@ Maintained continuously as the build progresses.
 - `kubectl describe pod <pod> -n shortlink` : inspect a pod's events (debugging)
 - `kubectl port-forward -n shortlink service/frontend 8090:80` : reach the app in the cluster at localhost:8090
 - Note: images use `imagePullPolicy: IfNotPresent` so kind-loaded local images aren't pulled from a registry.
+
+## Module 13 — Kubernetes: Ingress
+
+- `kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml` : install the ingress-nginx controller (kind variant)
+- `kubectl label node shortlink-control-plane ingress-ready=true` : label the node so the kind ingress controller schedules
+- `kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s` : wait for the controller to be ready
+- `kubectl apply -f k8s/ingress.yaml` : create the Ingress routing all traffic to the frontend Service
+- `kubectl get ingress -n shortlink` : list Ingress resources
+- `kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80` : reach the app through the ingress at localhost:8080
+- Note: for direct localhost:80 access, recreate the kind cluster with a config using extraPortMappings (optional enhancement).
