@@ -44,3 +44,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Personal learning notes (kept local, never committed)
+docs/*-NOTES.md
