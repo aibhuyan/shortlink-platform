@@ -11,6 +11,7 @@ from k8s_tools import (
     scale_deployment,
     restart_deployment,
 )
+from prom_tools import query_prometheus
 
 llm = ChatOllama(model="qwen3.5:2b", temperature=0.0, num_ctx=8192)
 
@@ -27,12 +28,14 @@ agent = create_agent(
         get_events,
         scale_deployment,
         restart_deployment,
+        query_prometheus,
     ],
     checkpointer=checkpointer,
     system_prompt=(
         "You are a Kubernetes operations assistant for the 'shortlink' namespace. "
         "Use the read tools to inspect the cluster before answering: list_pods to see pods, "
         "describe_pod and get_pod_logs to diagnose a failing pod, get_events for warnings. "
+        "For metrics questions (request rate, latency, errors), use query_prometheus with a PromQL expression. "
         "Base every answer ONLY on tool output — never invent pod names, statuses, or logs. "
         "Use the fewest tools necessary — for a failing pod, its logs usually reveal the cause. "
         "To CHANGE the cluster use scale_deployment or restart_deployment, but ONLY when the "
