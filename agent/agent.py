@@ -1,3 +1,5 @@
+import time
+
 from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
@@ -12,6 +14,7 @@ from k8s_tools import (
     restart_deployment,
 )
 from prom_tools import query_prometheus
+from metrics import record
 
 llm = ChatOllama(model="qwen3.5:2b", temperature=0.0, num_ctx=8192)
 
@@ -47,6 +50,7 @@ agent = create_agent(
 
 
 def run(question: str) -> None:
+    t0 = time.time()
     result = agent.invoke({"messages": [("user", question)]}, CONFIG)
     messages = result["messages"]
     # Only trace the CURRENT turn: messages after the last human message
@@ -54,10 +58,12 @@ def run(question: str) -> None:
         (i for i, m in enumerate(messages) if isinstance(m, HumanMessage)),
         default=0,
     )
+    tool_names: list[str] = []
     for message in messages[start:]:
         for call in getattr(message, "tool_calls", None) or []:
+            tool_names.append(call["name"])
             print(f"  · tool: {call['name']}({call.get('args', {})})")
-    answer = result["messages"][-1].content
+    answer = messages[-1].content
     if not answer:
         # Small models sometimes keep calling tools and never write a final answer.
         # Force one: re-ask the RAW model (no tools bound) to summarize the evidence.
@@ -69,6 +75,7 @@ def run(question: str) -> None:
         ]
         answer = llm.invoke(messages).content
     print(f"\nagent> {answer or '(no answer produced)'}\n")
+    record(tool_names, time.time() - t0)
 
 
 def main() -> None:
