@@ -63,3 +63,37 @@ def get_events(namespace: str = "shortlink") -> str:
     """
     output = _kubectl(["get", "events", "-n", namespace, "--sort-by=.lastTimestamp"])
     return output or f"No events in namespace '{namespace}'."
+
+
+def _confirm(action: str) -> bool:
+    """Ask the human to approve a write action before it runs."""
+    print(f"\n  ⚠️  The agent wants to: {action}")
+    reply = input("     Approve? [y/N] ").strip().lower()
+    return reply in {"y", "yes"}
+
+
+@tool
+def scale_deployment(deployment: str, replicas: int, namespace: str = "shortlink") -> str:
+    """Scale a Deployment to a number of replicas. Requires human approval before it runs.
+
+    Args:
+        deployment: the Deployment name (e.g. backend, frontend).
+        replicas: the desired number of replicas.
+        namespace: the namespace (default: shortlink).
+    """
+    if not _confirm(f"scale deployment/{deployment} to {replicas} replicas in '{namespace}'"):
+        return "Action cancelled by the user — nothing was changed."
+    return _kubectl(["scale", "deployment", deployment, f"--replicas={replicas}", "-n", namespace])
+
+
+@tool
+def restart_deployment(deployment: str, namespace: str = "shortlink") -> str:
+    """Do a rolling restart of a Deployment's pods. Requires human approval before it runs.
+
+    Args:
+        deployment: the Deployment name (e.g. backend, frontend).
+        namespace: the namespace (default: shortlink).
+    """
+    if not _confirm(f"restart deployment/{deployment} in '{namespace}'"):
+        return "Action cancelled by the user — nothing was changed."
+    return _kubectl(["rollout", "restart", "deployment", deployment, "-n", namespace])
