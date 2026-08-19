@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent
+  namespace: shortlink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+    spec:
+      serviceAccountName: shortlink-agent
+      containers:
+        - name: agent
+          image: ghcr.io/aibhuyan/shortlink-agent:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: AZURE_OPENAI_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: agent-secret
+                  key: endpoint
+            - name: AZURE_OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: agent-secret
+                  key: apikey
+            - name: AZURE_OPENAI_DEPLOYMENT
+              value: gpt-4.1-mini
+            - name: OPENAI_API_VERSION
+              value: "2024-10-21"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent
+  namespace: shortlink
+spec:
+  selector:
+    app: agent
+  ports:
+    - port: 80
+      targetPort: 8000

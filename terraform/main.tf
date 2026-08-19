@@ -26,7 +26,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name       = "default"
-    node_count = 1
+    node_count = 2
     vm_size    = "Standard_B2s_v2"
   }
 
@@ -53,4 +53,42 @@ resource "azurerm_postgresql_flexible_server" "db" {
   lifecycle {
     ignore_changes = [zone]
   }
+}
+
+# --- Azure OpenAI (via Azure AI Foundry) for the AI agent ---
+resource "azurerm_cognitive_account" "openai" {
+  name                = "shortlink-openai-aibhuyan"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "OpenAI"
+  sku_name            = "S0"
+}
+
+resource "azurerm_cognitive_deployment" "chat" {
+  name                 = "gpt-4.1-mini"
+  cognitive_account_id = azurerm_cognitive_account.openai.id
+
+  model {
+    format  = "OpenAI"
+    name    = "gpt-4.1-mini"
+    version = "2025-04-14"
+  }
+
+  sku {
+    name     = "GlobalStandard"
+    capacity = 8
+  }
+}
+
+output "openai_endpoint" {
+  value = azurerm_cognitive_account.openai.endpoint
+}
+
+output "openai_deployment" {
+  value = azurerm_cognitive_deployment.chat.name
+}
+
+output "openai_key" {
+  value     = azurerm_cognitive_account.openai.primary_access_key
+  sensitive = true
 }
