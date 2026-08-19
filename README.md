@@ -1,6 +1,6 @@
 # Shortlink Platform
 
-A production-shaped **URL shortener** built as an end-to-end **DevOps portfolio**: a deliberately simple app (paste a long URL, get a short code, watch click counts) wrapped in a full, realistic delivery pipeline — containers, Kubernetes, GitOps, infrastructure-as-code, CI/CD, and observability.
+A production-shaped **URL shortener** built as an end-to-end **DevOps project**: a deliberately simple app (paste a long URL, get a short code, watch click counts) wrapped in a full, realistic delivery pipeline — containers, Kubernetes, GitOps, infrastructure-as-code, CI/CD, and observability.
 
 The app is intentionally boring. **The infrastructure is the point.**
 

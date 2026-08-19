@@ -48,5 +48,5 @@ Thumbs.db
 # Personal learning notes (kept local, never committed)
 docs/*-NOTES.md
 
-# Work-in-progress LinkedIn architecture animation (finalize after Azure phase)
-/stack.html
+# Work-in-progress LinkedIn architecture animation (local only)
+/stack*.html
