@@ -19,6 +19,7 @@ The app is intentionally boring. **The infrastructure is the point.**
 | **CI/CD** | GitHub Actions, Trivy image scanning, GHCR, ArgoCD (GitOps) |
 | **Infrastructure** | Terraform (Azure: AKS + managed PostgreSQL) |
 | **Observability** | kube-prometheus-stack (Prometheus, Grafana, Alertmanager), k6 load testing |
+| **AI Ops** | LangGraph agent — local Ollama or Azure OpenAI — in-cluster read-only RBAC |
 
 ---
 
@@ -45,8 +46,10 @@ flowchart LR
         prom[Prometheus] -->|scrape /metrics| api
         graf[Grafana] --> prom
         alert[Alertmanager] --> prom
+        agent[AI ops agent - LangGraph] -->|reads, RBAC| api
     end
 
+    aoai[Azure OpenAI - gpt-4.1-mini] -. LLM .-> agent
     tf[Terraform] -->|provisions| cluster
     tf -->|provisions| pg
     k6[k6 load test] -->|traffic| lb
@@ -67,6 +70,7 @@ argocd/         ArgoCD Application (GitOps)
 terraform/      Azure infra as code (AKS + managed PostgreSQL)
 monitoring/     Grafana dashboard JSON
 k6/             Load-test script
+agent/          AI ops agent (LangGraph; local Ollama or Azure OpenAI)
 .github/        CI workflow
 command.md      A running log of every command used to build this project
 ```
@@ -161,6 +165,26 @@ A sample run: **2,466 requests, 100% checks passed, 0% failures, p95 ~77 ms** �
 
 ---
 
+## AI Ops Agent
+
+A natural-language **Kubernetes operations agent** ([`agent/`](agent/)), built with **LangGraph** and runnable on a **local model (Ollama)** or **Azure OpenAI** — a one-line model swap.
+
+- **Read-only diagnostics** — `list_pods`, `describe_pod`, `get_pod_logs`, `get_events`, and a Prometheus query tool. Ask *"why is the migrate pod failing?"* and it chains tools to answer, grounded in real cluster output.
+- **Guarded write actions** (local CLI) — `scale` / `restart` require explicit `y/N` human approval before anything runs.
+- **Conversation memory**, plus the agent's **own metrics** pushed to Prometheus → a Grafana dashboard (LLMOps — observe the observer).
+- **Two deployments from the same tools:**
+  - **Local** — an interactive CLI against a kind cluster, driven by a local Ollama model (`qwen`), with reliability guardrails for the small model (temperature 0, context limits, a tool-less "force final answer" fallback).
+  - **On Azure (AKS)** — a **FastAPI service** (`POST /ask`) running as a pod with a **least-privilege ServiceAccount + read-only RBAC** (no kubeconfig), reasoning with **Azure OpenAI (`gpt-4.1-mini`)**, provisioned by Terraform.
+- **The safety boundary is RBAC, not the prompt** — a read-only ServiceAccount cannot damage the cluster no matter what the model is told.
+
+**The agent, observed** — its own tool-call counts and answer latency, pushed to Prometheus and graphed in Grafana:
+
+![The AI agent's own LLMOps dashboard in Grafana](docs/images/grafana-agent.png)
+
+See [`agent/README.md`](agent/README.md) for setup and usage.
+
+---
+
 ## The build, in phases
 
 Built module-by-module, each on its own branch merged via pull request, with tagged phase boundaries:
@@ -170,6 +194,7 @@ Built module-by-module, each on its own branch merged via pull request, with tag
 - `v0.3-kubernetes` — running on Kubernetes with Helm
 - `v0.4-cicd` — GitHub Actions CI + ArgoCD GitOps
 - `v0.5-observability` — Prometheus, Grafana, Alertmanager, k6
+- **AI Ops Agent** — LangGraph agent (local Ollama / Azure OpenAI), in-cluster read-only RBAC
 
 ---
 
@@ -183,11 +208,11 @@ The app is intentionally minimal — the infrastructure is the focus. Natural ne
 - Rate limiting and abuse protection
 - Authentication (per-user links)
 
-**AI-assisted operations (planned direction)**
+**AI agent — production hardening (next steps)**
 
-A larger goal for this platform is an **AI agent for Kubernetes operations** — a self-hosted assistant that helps observe and run the cluster:
+The AI ops agent (above) is built; to run it as a real production tool:
 
-- An **agent harness** driving a **locally-run LLM** (no external API — the model runs on-cluster / on-prem for privacy and cost control).
-- Natural-language **cluster operations** ("why is the backend pod restarting?", "scale the frontend to 4") over guarded access to the Kubernetes API.
-- **Automated diagnostics and remediation** — the agent inspects Prometheus metrics, logs, and events to surface root causes and propose (or, with approval, apply) fixes.
-- Hooking the agent into the existing **observability** stack so an Alertmanager alert can trigger an AI triage step.
+- Expose it via an authenticated Ingress or a **Slack / Teams (ChatOps)** bridge
+- **Alertmanager-triggered auto-triage** — diagnose incidents autonomously when an alert fires
+- Write actions behind an **approval workflow** + full **audit logging**
+- Secrets via **Azure Key Vault + Managed Identity** (no static API key)
