@@ -72,7 +72,6 @@ monitoring/     Grafana dashboard JSON
 k6/             Load-test script
 agent/          AI ops agent (LangGraph; local Ollama or Azure OpenAI)
 .github/        CI workflow
-command.md      A running log of every command used to build this project
 ```
 
 ---
